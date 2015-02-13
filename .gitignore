@@ -1,4 +1,14 @@
+# Common Python
+*.pyc
+
+# Virtual env folders
 bin
 *.egg-info
 include
 lib
+
+# pytest folder
+__pycache__
+
+# Vim files
+*.swp
