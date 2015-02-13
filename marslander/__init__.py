@@ -79,16 +79,9 @@ def print_debug(lander):
     print("Speed : ({x}, {y})".format(**lander['speed']), file=sys.stderr)
     print("Acceleration : ({x}, {y})".format(**lander['acc']), file=sys.stderr)
 
-def main():
-    setup()
-    print("Setup done", file=sys.stderr)
-    while True:
-        loop()
+setup()
+print("Setup done", file=sys.stderr)
+while True:
+    loop()
 
-class MarsLander(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.run = main
-        self.input_stream = sys.stdin
-        self.output_stream = sys.stdout
 
