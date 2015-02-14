@@ -6,6 +6,7 @@ bin
 *.egg-info
 include
 lib
+pip-selfcheck.json
 
 # pytest folder
 __pycache__
