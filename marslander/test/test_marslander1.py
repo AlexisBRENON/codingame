@@ -1,7 +1,7 @@
 """ Mars lander level 1 test file """
 import pytest
 import subprocess
-import re
+import marslander.test.marslander_backend as marslander_backend
 
 @pytest.fixture
 def mars_lander():
@@ -24,7 +24,7 @@ def test_toutdroit(mars_lander):
     for line in mars_lander.stdout:
         line = line.decode()
         print("### TEST ### received '{}'".format(line.strip()))
-        assert re.match('[0-9]* [01234]', line)
+        marslander_backend.check_output(line)
     mars_lander.kill()
 
 
