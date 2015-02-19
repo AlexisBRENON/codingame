@@ -40,11 +40,11 @@ def main_loop(mars_lander, surface, landing_area, lander):
     assert int(abs(lander['speed']['y'])) <= 40
 
 def test_toutdroit(mars_lander):
-    surface = [(0, 1500), (1000, 2000), (2000, 500), (3500, 500), (5000, 1500), (6999, 1000)]
+    surface = [(0, 100), (1000, 500), (1500, 100), (3000, 100), (5000, 1500), (6999, 1000)]
     landing_area = {
-        'x1' : 2000,
-        'x2' : 3500,
-        'y' : 500
+        'x1' : 1500,
+        'x2' : 3000,
+        'y' : 100
     }
     lander = {
         'pos' : {
