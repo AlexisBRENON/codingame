@@ -28,7 +28,7 @@ def update_lander(current, output):
     except ZeroDivisionError:
         current['acc']['y'] = GRAVITY
     current['rotation'] = update_rotation(current['rotation'], output['rotation'])
-    current['power'] = update_power(current['power'], output['power'])
+    current['power'] = update_power(current['power'], min(output['power'], current['fuel']))
     return current 
 
 def update_rotation(current, goal):
