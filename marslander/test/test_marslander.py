@@ -24,10 +24,13 @@ def init(mars_lander, surface, landing_area, lander):
     mars_lander.stdin.flush()
 
 def main_loop(mars_lander, surface, landing_area, lander):
+    counter = 1
     while not marslander_backend.is_landed(lander, landing_area):
         assert not marslander_backend.is_crashed(lander, surface)
-        print("### TEST ### input : {}".format(
+        print("### TEST ### input {} : {}".format(
+            counter,
             marslander_backend.lander_representation(lander)))
+        counter += 1
         line = mars_lander.stdout.readline().decode().strip()
         output = marslander_backend.check_output(line)
         lander = marslander_backend.update_lander(lander, output)
