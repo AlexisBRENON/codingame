@@ -22,12 +22,11 @@ def update_lander(current, output):
     current['pos']['y'] += current['speed']['y']
     current['speed']['x'] += current['acc']['x']
     current['speed']['y'] += current['acc']['y']
-    acc_x = current['acc']['x']
-    current['acc']['x'] += math.sin(current['rotation'])*current['power']
+    current['acc']['x'] = math.sin(current['rotation'])*current['power']
     try:
-        current['acc']['y'] += GRAVITY + math.cos(current['rotation'])/current['power']
+        current['acc']['y'] = GRAVITY + math.cos(current['rotation'])*current['power']
     except ZeroDivisionError:
-        current['acc']['y'] += GRAVITY
+        current['acc']['y'] = GRAVITY
     current['rotation'] = update_rotation(current['rotation'], output['rotation'])
     current['power'] = update_power(current['power'], output['power'])
     return current 
@@ -54,3 +53,32 @@ def is_landed(lander, landing_area):
     return ((lander['pos']['x'] >= landing_area['x1']) and
         (lander['pos']['x'] <= landing_area['x2']) and
         (lander['pos']['y'] <= landing_area['y']))
+
+def is_crashed(lander, surface):
+    crashed = (lander['pos']['x'] < 0 or
+            lander['pos']['x'] >= 7000 or
+            lander['pos']['y'] >= 3000)
+    if not crashed:
+        previous_point = surface[0]
+        for point in surface[1:]:
+            if (lander['pos']['x'] >= previous_point[0] and
+                lander['pos']['x'] <= point[0]):
+                surface_line = {
+                    'x' : previous_point[0] - point[0],
+                    'y' : previous_point[1] - point[1]
+                }
+                position_vector = {
+                    'x' : previous_point[0] - lander['pos']['x'],
+                    'y' : previous_point[1] - lander['pos']['y']
+                }
+                scalar_product = (
+                    (surface_line['x']*position_vector['x']) +
+                    (surface_line['y']*position_vector['y']))
+                if scalar_product < 0:
+                    crashed = True
+                    break
+                else:
+                    previous_point = point
+    return crashed
+
+

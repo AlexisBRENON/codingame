@@ -80,13 +80,12 @@ def print_debug(lander):
     print("Speed : ({x}, {y})".format(**lander['speed']), file=sys.stderr)
     print("Acceleration : ({x}, {y})".format(**lander['acc']), file=sys.stderr)
 
-if __name__ == "__main__":
-    print("Mars Lander Program", file=sys.stderr)
-    print("Initialization", end='', file=sys.stderr)
-    setup()
-    print("\nInitialization done", file=sys.stderr)
-    print("Enterring in main loop", file=sys.stderr)
-    while True:
-        loop()
+print("Mars Lander Program", file=sys.stderr)
+print("Initialization", end='', file=sys.stderr)
+setup()
+print("\nInitialization done", file=sys.stderr)
+print("Enterring in main loop", file=sys.stderr)
+while True:
+    loop()
 
 

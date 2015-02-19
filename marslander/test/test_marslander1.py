@@ -4,11 +4,14 @@ import subprocess
 import marslander.test.marslander_backend as marslander_backend
 
 @pytest.fixture
-def mars_lander():
+def mars_lander(request):
     mars_lander_process = subprocess.Popen(
         ["python", "./marslander.py"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE)
+    def end():
+        mars_lander_process.kill()
+    request.addfinalizer(end)
     return mars_lander_process
 
 def test_toutdroit(mars_lander):
@@ -44,6 +47,7 @@ def test_toutdroit(mars_lander):
         ).encode())
     mars_lander.stdin.flush()
     while not marslander_backend.is_landed(lander, landing_area):
+        assert not marslander_backend.is_crashed(lander, surface)
         print("### TEST ### input : {}".format(
             marslander_backend.lander_representation(lander)))
         line = mars_lander.stdout.readline().decode().strip()
@@ -54,6 +58,8 @@ def test_toutdroit(mars_lander):
             marslander_backend.lander_representation(lander)
             ).encode())
         mars_lander.stdin.flush()
-    mars_lander.kill()
+    assert int(lander['rotation']) == 0
+    assert int(abs(lander['speed']['x'])) <= 20
+    assert int(abs(lander['speed']['y'])) <= 40
 
 
