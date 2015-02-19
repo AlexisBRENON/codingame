@@ -17,7 +17,6 @@ def check_output(output):
     return {'rotation' : rotation, 'power' : power}
 
 def update_lander(current, output):
-    current['fuel'] -= current['power']
     current['pos']['x'] += current['speed']['x']
     current['pos']['y'] += current['speed']['y']
     current['speed']['x'] += current['acc']['x']
@@ -29,6 +28,7 @@ def update_lander(current, output):
         current['acc']['y'] = GRAVITY
     current['rotation'] = update_rotation(current['rotation'], output['rotation'])
     current['power'] = update_power(current['power'], min(output['power'], current['fuel']))
+    current['fuel'] -= current['power']
     return current 
 
 def update_rotation(current, goal):
