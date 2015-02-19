@@ -51,7 +51,6 @@ def test_toutdroit(mars_lander):
         print("### TEST ### input : {}".format(
             marslander_backend.lander_representation(lander)))
         line = mars_lander.stdout.readline().decode().strip()
-        print("### TEST ### output : {}".format(line))
         output = marslander_backend.check_output(line)
         lander = marslander_backend.update_lander(lander, output)
         mars_lander.stdin.write("{}\n".format(
