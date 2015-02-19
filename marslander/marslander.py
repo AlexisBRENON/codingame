@@ -67,7 +67,6 @@ def loop():
         'y' : distance_to_destination['y'] - lander['speed']['y'] - 40
     }
     if distance_to_destination['y'] < 1000:
-        print("Go back to straight rotation", file=sys.stderr)
         result['R'] = 0
     else:
         result['R'] = math.floor(int(math.degrees(math.atan(goal['x']/goal['y']))))

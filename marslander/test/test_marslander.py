@@ -68,3 +68,32 @@ def test_toutdroit(mars_lander):
     main_loop(mars_lander, surface, landing_area, lander)
 
 
+def test_facile_a_droite(mars_lander):
+    surface = [(0, 150), (1000, 500), (1500, 1500), (3000, 1000), (4000, 150), (5000, 150), (6999,
+        1000)]
+    landing_area = {
+        'x1' : 4000,
+        'x2' : 5000,
+        'y' : 150
+    }
+    lander = {
+        'pos' : {
+            'x' : 2500,
+            'y' : 2700
+        },
+        'speed' : {
+            'x' : 0,
+            'y' : 0
+        },
+        'fuel' : 550,
+        'rotation' : 0,
+        'power' : 0,
+        'acc' : {
+            'x' : 0,
+            'y' : -3.711
+        }
+    }
+
+    init(mars_lander, surface, landing_area, lander)
+    main_loop(mars_lander, surface, landing_area, lander)
+

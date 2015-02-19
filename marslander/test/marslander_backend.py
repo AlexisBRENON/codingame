@@ -57,24 +57,21 @@ def is_landed(lander, landing_area):
 def is_crashed(lander, surface):
     crashed = (lander['pos']['x'] < 0 or
             lander['pos']['x'] >= 7000 or
-            lander['pos']['y'] >= 3000)
+            lander['pos']['y'] >= 3000 or
+            lander['pos']['y'] < 0)
     if not crashed:
         previous_point = surface[0]
         for point in surface[1:]:
             if (lander['pos']['x'] >= previous_point[0] and
                 lander['pos']['x'] <= point[0]):
-                surface_line = {
-                    'x' : previous_point[0] - point[0],
-                    'y' : previous_point[1] - point[1]
-                }
-                position_vector = {
-                    'x' : previous_point[0] - lander['pos']['x'],
-                    'y' : previous_point[1] - lander['pos']['y']
-                }
-                scalar_product = (
-                    (surface_line['x']*position_vector['x']) +
-                    (surface_line['y']*position_vector['y']))
-                if scalar_product < 0:
+                a_coef = (
+                    (point[1]-previous_point[1])/(point[0]-previous_point[0])
+                )
+                b_coef = previous_point[1] - a_coef * previous_point[0]
+
+                min_alt = a_coef * lander['pos']['x'] + b_coef
+
+                if min_alt >= lander['pos']['y']:
                     crashed = True
                     break
                 else:
