@@ -16,15 +16,33 @@ def setup():
         print('.', file=sys.stderr, end='')
         if len(SURFACE) > 1 and SURFACE[-2][1] == SURFACE[-1][1]:
             CHECKPOINTS.append({
-                'x1' : SURFACE[-2][0]+500,
-                'x2' :
-                SURFACE[-1][0]-500,
-                'y'
-                :
-                SURFACE[-2][1]
+                'x1' : SURFACE[-2][0]+10,
+                'x2' : SURFACE[-1][0]-10,
+                'y'  : SURFACE[-2][1]
             })
 
-def loop():
+def loop(result):
+    lander = read_loop_input()
+    error = compute_error(lander)
+    result['P'] = max(0, result['P']-1)
+    if error['rotation'] != 0:
+        result = fix_rotation(result, lander, error)
+    if error['x'] != 0:
+        result = fix_position(result, lander, error)
+    else:
+        if error['hs'] != 0 or error['vs'] != 0:
+            result = fix_speed(result, lander, error)
+    result['R'] = int(result['R'])
+    result['P'] = int(result['P'])
+    print("{R} {P}".format(**result))
+    return result
+
+def print_debug(lander):
+    print("Position : ({x}, {y})".format(**lander['pos']), file=sys.stderr)
+    print("Speed : ({x}, {y})".format(**lander['speed']), file=sys.stderr)
+    print("Acceleration : ({x}, {y})".format(**lander['acc']), file=sys.stderr)
+
+def read_loop_input():
     loop_input = input().split()
     lander = {}
     lander['rotation'] = math.radians(int(loop_input[5]))
@@ -42,7 +60,9 @@ def loop():
         'x' : lander['power'] * math.cos(lander['rotation']),
         'y' : GRAVITY + lander['power'] * math.sin(lander['rotation'])
     }
+    return lander
 
+def compute_error(lander):
     destination = CHECKPOINTS[0]
     if lander['pos']['x'] < destination['x1']:
         destination['x'] = destination['x1']
@@ -50,44 +70,57 @@ def loop():
         destination['x'] = destination['x2']
     else:
         destination['x'] = lander['pos']['x']-lander['speed']['x']
-
-    distance_to_destination = {}
-    for axis in ['x', 'y']:
-        distance_to_destination[axis] = lander['pos'][axis] - destination[axis]
-    distance_to_destination['full'] = math.hypot(
-        distance_to_destination['x'],
-        distance_to_destination['y']
-    )
-    result = {}
-    goal = {
-        'x' : distance_to_destination['x'] - lander['speed']['x'] + math.copysign(
-            20,
-            lander['speed']['x']
-        ),
-        'y' : distance_to_destination['y'] - lander['speed']['y'] - 40
+    error = {
+        'x' : (lander['pos']['x'] - destination['x'])/7000,
+        'y' : (lander['pos']['y'] - destination['y'])/3000,
+        'rotation' : lander['rotation'],
     }
-    if distance_to_destination['y'] < 1000:
-        result['R'] = 0
+    if abs(lander['speed']['x']) > 15:
+        error['hs'] = lander['speed']['x'] + math.copysign(15, -lander['pos']['x'])
     else:
-        result['R'] = math.floor(int(math.degrees(math.atan(goal['x']/goal['y']))))
-    if abs(result['R']) > 90:
-        result['R'] = int(math.copysign(90, result['R']))
+        error['hs'] = 0
+    if abs(lander['speed']['y']) > 35:
+        error['vs'] = lander['speed']['y'] + math.copysign(35, -lander['pos']['y'])
+    else:
+        error['vs'] = 0
+    return error
 
-    result['P'] = int(min(4, 1/(math.hypot(goal['x'], goal['y'])/6000)))
+def fix_rotation(result, lander, error):
+    print("# Lander : fixing rotation angle", file=sys.stderr)
+    result['R'] = 0
+    return result
 
-    print("{R} {P}".format(**result))
+def fix_position(result, lander, error):
+    print("# Lander : fixing trajectory", file=sys.stderr)
+    required_rotation = math.atan(math.radians(error['x']/error['y']))
+    result['R'] = math.copysign(min(90, abs(required_rotation)), required_rotation)
+    turns_until_position = abs(lander['rotation'] - result['R'])/15
+    if turns_until_position <= 3:
+        result['P'] = 4-turns_until_position
+    return result
 
-def print_debug(lander):
-    print("Position : ({x}, {y})".format(**lander['pos']), file=sys.stderr)
-    print("Speed : ({x}, {y})".format(**lander['speed']), file=sys.stderr)
-    print("Acceleration : ({x}, {y})".format(**lander['acc']), file=sys.stderr)
+def fix_speed(result, lander, error):
+    print("# Lander : fixing speed", file=sys.stderr)
+    required_rotation = math.atan(error['hs']/error['vs'])
+    result['R'] = math.copysign(min(90, abs(required_rotation)), required_rotation)
+    turns_until_position = abs(lander['rotation'] - result['R'])/15
+    if turns_until_position <= 3:
+        result['P'] = 4-turns_until_position
+    return result
 
 print("Mars Lander Program", file=sys.stderr)
 print("Initialization", end='', file=sys.stderr)
 setup()
 print("\nInitialization done", file=sys.stderr)
 print("Enterring in main loop", file=sys.stderr)
+result = {
+    'R' : 0,
+    'P' : 0
+}
+counter = 1
 while True:
-    loop()
+    print("Turn {}".format(counter), file=sys.stderr)
+    counter += 1
+    result = loop(result)
 
 
