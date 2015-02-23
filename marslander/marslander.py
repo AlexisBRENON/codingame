@@ -94,10 +94,8 @@ def fix_position(result, lander, error):
     required_rotation = -1 * math.degrees(math.atan(error['x']/error['y']))
     result['R'] = math.copysign(min(90, abs(required_rotation)), required_rotation)
     turns_until_position = abs(lander['rotation'] - result['R'])/15
-    print("lander[rotation]-resultR : {}".format(lander['rotation']-result['R']), file=sys.stderr)
-    print("turns_until_position : {}".format(turns_until_position), file=sys.stderr)
     if turns_until_position <= 3:
-        result['P'] = round(4-turns_until_position)
+        result['P'] = round((4-turns_until_position)*(1/(1+math.exp(-0.16*(abs(result['R'])-32)))))
     print("# Lander : fixing trajectory", file=sys.stderr)
     return result
 
